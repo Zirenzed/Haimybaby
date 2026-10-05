@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="ภารกิจไขหัวใจ — เกมปริศนาเล็กๆ ก่อนบอกความในใจ">
+<meta name="theme-color" content="#1A1030">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔐</text></svg>">
+<title>ภารกิจไขหัวใจ</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sriracha&family=Noto+Sans+Thai+Looped:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg-top: #2B1A4A;
+    --bg-bottom: #180F2B;
+    --text: #F4EDFF;
+    --muted: #B6A8D6;
+    --gold: #FFD36E;
+    --gold-ink: #332000;
+    --line: rgba(244, 237, 255, .22);
+    --dot: rgba(244, 237, 255, .22);
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  html {
+    scroll-padding-top: env(safe-area-inset-top, 0px);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    min-height: 100%;
+  }
+
+  body {
+    background: linear-gradient(180deg, var(--bg-top), var(--bg-bottom)) fixed;
+    background-color: var(--bg-top);
+    color: var(--text);
+    font-family: "Noto Sans Thai Looped", "Sarabun", Tahoma, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    min-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    padding: 28px 20px;
+    overscroll-behavior: none;
+  }
+
+  main {
+    width: 100%;
+    max-width: 440px;
+    text-align: center;
+  }
+
+  @media (min-width: 860px) {
+    main {
+      max-width: 560px;
+    }
+  }
+
+  .step {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 0 0 16px;
+  }
+
+  .step span {
+    width: 8px;
+    height: 8px;
+    border-radius: 99px;
+    background: var(--dot);
+    transition: width .2s ease, background .2s ease;
+  }
+
+  .step span.on {
+    width: 26px;
+    background: var(--gold);
+  }
+
+  h1 {
+    font-family: "Sriracha", "Noto Sans Thai Looped", Tahoma, sans-serif;
+    font-weight: 400;
+    font-size: clamp(1.6rem, 6.2vw, 2.2rem);
+    line-height: 1.4;
+    margin: 4px 0 6px;
+    text-wrap: balance;
+  }
+
+  .sub {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: var(--muted);
+    margin: 0 auto 6px;
+    max-width: 32ch;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    min-width: 116px;
+    padding: 10px 30px;
+    border-radius: 999px;
+    font: 600 1.05rem "Noto Sans Thai Looped", Tahoma, sans-serif;
+    text-decoration: none;
+    cursor: pointer;
+    border: 2px solid transparent;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: transform .15s ease, filter .15s ease, border-color .15s ease;
+  }
+
+  .btn:focus-visible {
+    outline: 3px solid var(--text);
+    outline-offset: 3px;
+  }
+
+  .btn-main {
+    background: var(--gold);
+    color: var(--gold-ink);
+  }
+
+  .btn-main:hover {
+    filter: brightness(1.08);
+    transform: translateY(-2px);
+  }
+
+  .btn-alt {
+    background: rgba(244,237,255,.08);
+    color: var(--text);
+    border-color: var(--line);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 20px;
+    min-height: 56px;
+  }
+
+  .hint {
+    color: var(--muted);
+    font-size: .92rem;
+    margin: 10px 0 0;
+    min-height: 1.3em;
+  }
+
+  /* ---- memory match ---- */
+
+  .match-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    max-width: 320px;
+    margin: 20px auto 0;
+  }
+
+  .card {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 16px;
+    border: 2px solid var(--line);
+    background: rgba(244, 237, 255, .06);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    perspective: 600px;
+  }
+
+  .card-inner {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transition: transform .35s ease;
+  }
+
+  .card.flip .card-inner,
+  .card.matched .card-inner {
+    transform: rotateY(180deg);
+  }
+
+  .card-face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    backface-visibility: hidden;
+    font-size: 1.8rem;
+  }
+
+  .card-back {
+    background: linear-gradient(135deg, #3A2766, #241845);
+    color: var(--gold);
+    font-size: 1.3rem;
+  }
+
+  .card-front {
+    background: rgba(244, 237, 255, .12);
+    transform: rotateY(180deg);
+  }
+
+  .card.matched {
+    opacity: .55;
+    cursor: default;
+  }
+
+  .match-status {
+    font: 600 1rem "Noto Sans Thai Looped", Tahoma, sans-serif;
+    color: var(--gold);
+    margin: 14px 0 0;
+  }
+
+  /* ---- compatibility quiz ---- */
+
+  .meter-ring {
+    width: 150px;
+    height: 150px;
+    margin: 10px auto 6px;
+    position: relative;
+  }
+
+  .meter-ring svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+
+  .meter-ring circle {
+    fill: none;
+    stroke-width: 12;
+  }
+
+  .meter-ring .track {
+    stroke: rgba(244, 237, 255, .15);
+  }
+
+  .meter-ring .fill {
+    stroke: var(--gold);
+    stroke-linecap: round;
+    transition: stroke-dashoffset .5s ease;
+  }
+
+  .meter-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Sriracha", "Noto Sans Thai Looped", Tahoma, sans-serif;
+    font-size: 1.6rem;
+    color: var(--gold);
+  }
+
+  .quiz-q {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin: 4px 0 4px;
+  }
+
+  .quiz-reaction {
+    min-height: 1.6em;
+    color: var(--muted);
+    font-size: .98rem;
+    margin-top: 6px;
+  }
+
+  /* ---- lock dials ---- */
+
+  .lock-wrap {
+    margin: 20px auto 0;
+  }
+
+  .dials {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  .dial {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dial button {
+    width: 44px;
+    height: 40px;
+    border-radius: 12px;
+    border: 2px solid var(--line);
+    background: rgba(244, 237, 255, .08);
+    color: var(--text);
+    font-size: 1.1rem;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .dial-value {
+    width: 56px;
+    height: 64px;
+    border-radius: 14px;
+    background: rgba(244, 237, 255, .1);
+    border: 2px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Sriracha", "Noto Sans Thai Looped", Tahoma, sans-serif;
+    font-size: 1.8rem;
+    color: var(--gold);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .lock-icon {
+    font-size: 3.6rem;
+    margin: 6px 0 2px;
+    transition: transform .3s ease;
+  }
+
+  .lock-wrap.shake {
+    animation: shakeLock .4s ease;
+  }
+
+  @keyframes shakeLock {
+    0%,100% { transform:translateX(0); }
+    20% { transform:translateX(-8px); }
+    40% { transform:translateX(8px); }
+    60% { transform:translateX(-6px); }
+    80% { transform:translateX(6px); }
+  }
+
+  .lock-icon.open {
+    transform: scale(1.15) rotate(-6deg);
+  }
+
+  /* ---- balloons ---- */
+
+  .sentence {
+    font-family: "Sriracha", "Noto Sans Thai Looped", Tahoma, sans-serif;
+    font-size: clamp(1.3rem, 5.4vw, 1.7rem);
+    line-height: 1.8;
+    min-height: 2.6em;
+    margin: 6px 0 10px;
+  }
+
+  .sentence .blank {
+    color: var(--muted);
+  }
+
+  .sentence .word {
+    color: var(--gold);
+    animation: wordPop .35s ease;
+  }
+
+  @keyframes wordPop {
+    0% {
+      transform: scale(.4);
+      opacity: 0;
+    }
+
+    70% {
+      transform: scale(1.15);
+    }
+
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .balloons {
+    position: relative;
+    height: 220px;
+    max-width: 360px;
+    margin: 10px auto 0;
+  }
+
+  .balloon {
+    position: absolute;
+    bottom: 0;
+    width: 56px;
+    height: 70px;
+    border-radius: 50% 50% 50% 50% / 58% 58% 42% 42%;
+    border: 0;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold-ink);
+    font-weight: 700;
+    transition: transform .2s ease, opacity .3s ease;
+  }
+
+  .balloon:active {
+    transform: scale(.94);
+  }
+
+  .balloon.pop {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+
+  /* ---- final ---- */
+
+  .final-sentence {
+    font-family: "Sriracha", "Noto Sans Thai Looped", Tahoma, sans-serif;
+    font-size: clamp(1.6rem, 6.4vw, 2.1rem);
+    line-height: 1.6;
+    margin: 10px 0 4px;
+    color: var(--gold);
+  }
+
+  .btn.flee {
+    position: fixed;
+    margin: 0;
+    transform-origin: top left;
+    transition:
+      left .18s ease-out,
+      top .18s ease-out,
+      transform .18s ease-out;
+    z-index: 10;
+    white-space: nowrap;
+  }
+
+  .confetti {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 20;
+  }
+
+  .confetti span {
+    position: absolute;
+    top: -10%;
+    font-size: 1.4rem;
+    animation:
+      confettiFall var(--d) linear var(--dl) forwards;
+  }
+
+  @keyframes confettiFall {
+    to {
+      transform: translateY(120vh) rotate(var(--r));
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-inner,
+    .confetti span,
+    .sentence .word,
+    .lock-icon,
+    .btn.flee,
+    .lock-wrap.shake {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<main>
+  <div class="step" id="step"></div>
+  <div id="view"></div>
+</main>
+
+<div class="confetti" id="confetti" aria-hidden="true"></div>
+
+<script>
+  var TOTAL = 5;
+
+  var view = document.getElementById('view');
+  var stepBox = document.getElementById('step');
+  var confetti = document.getElementById('confetti');
+
+  var reduceMotion =
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+
+    if (cls) {
+      e.className = cls;
+    }
+
+    if (text) {
+      e.textContent = text;
+    }
+
+    return e;
+  }
+
+  function rand(a, b) {
+    return a + Math.random() * (b - a);
+  }
+
+  function buildStep() {
+    stepBox.textContent = '';
+
+    for (var i = 1; i <= TOTAL; i++) {
+      stepBox.appendChild(document.createElement('span'));
+    }
+  }
+
+  function updateStep(n) {
+    var spans = stepBox.children;
+
+    for (var i = 0; i < spans.length; i++) {
+      spans[i].className =
+        (i + 1 === n) ? 'on' : '';
+    }
+  }
+
+  function confettiBurst() {
+    if (reduceMotion) {
+      return;
+    }
+
+    for (var i = 0; i < 22; i++) {
+      var s = el(
+        'span',
+        '',
+        i % 2 ? '🧡' : '✨'
+      );
+
+      s.style.left =
+        (Math.random() * 96) + '%';
+
+      s.style.setProperty(
+        '--d',
+        (2.4 + Math.random() * 1.8) + 's'
+      );
+
+      s.style.setProperty(
+        '--dl',
+        (Math.random() * 0.8) + 's'
+      );
+
+      s.style.setProperty(
+        '--r',
+        (Math.random() * 360) + 'deg'
+      );
+
+      confetti.appendChild(s);
+    }
+
+    setTimeout(function () {
+      confetti.textContent = '';
+    }, 5000);
+  }
+
+  function renderIntro() {
+    updateStep(1);
+    view.textContent = '';
+
+    view.appendChild(
+      el(
+        'h1',
+        '',
+        'รับภารกิจลับไหมครับ?'
+      )
+    );
+
+    view.appendChild(
+      el(
+        'p',
+        'sub',
+        'มีภารกิจเล็กๆ ซ่อนอยู่ 4 ด่าน ก่อนจะถึงสิ่งที่ผมอยากบอกจริงๆ ครับ'
+      )
+    );
+
+    var actions = el('div', 'actions');
+
+    var go = el(
+      'a',
+      'btn btn-main',
+      'รับภารกิจ 🕵️'
+    );
+
+    go.href = '#match';
+
+    actions.appendChild(go);
+    view.appendChild(actions);
+  }
+
+  /* ================= ด่าน 1: จับคู่ความทรงจำ ================= */
+
+  function renderMatch() {
+    updateStep(2);
+    view.textContent = '';
+
+    view.appendChild(
+      el(
+        'h1',
+        '',
+        'ด่าน 1: จับคู่ความทรงจำ'
+      )
+    );
+
+    view.appendChild(
+      el(
+        'p',
+        'sub',
+        'พลิกการ์ดแล้วจับคู่สัญลักษณ์ที่เหมือนกันให้ครบทุกคู่ครับ'
+      )
+    );
+
+    var symbols = [
+      '🧡',
+      '🔑',
+      '💌'
+    ];
+
+    var deck = symbols.concat(symbols);
+
+    for (var i = deck.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = deck[i];
+
+      deck[i] = deck[j];
+      deck[j] = t;
+    }
+
+    var grid = el('div', 'match-grid');
+
+    view.appendChild(grid);
+
+    var status = el(
+      'p',
+      'match-status',
+      'จับคู่ได้ 0 / 3'
+    );
+
+    view.appendChild(status);
+
+    var actions = el('div', 'actions');
+
+    view.appendChild(actions);
+
+    var flipped = [];
+    var matches = 0;
+    var busy = false;
+
+    deck.forEach(function (sym) {
+      var card = el('button', 'card');
+
+      card.type = 'button';
+      card.setAttribute('aria-label', 'การ์ด');
+
+      var inner = el('div', 'card-inner');
+
+      var back = el(
+        'div',
+        'card-face card-back',
+        '?'
+      );
+
+      var front = el(
+        'div',
+        'card-face card-front',
+        sym
+      );
+
+      inner.appendChild(back);
+      inner.appendChild(front);
+
+      card.appendChild(inner);
+
+      card.dataset.sym = sym;
+
+      card.addEventListener('click', function () {
+        if (
+          busy ||
+          card.classList.contains('flip') ||
+          card.classList.contains('matched')
+        ) {
+          return;
+        }
+
+        card.classList.add('flip');
+        flipped.push(card);
+
+        if (flipped.length === 2) {
+          busy = true;
+
+          var a = flipped[0];
+          var b = flipped[1];
+
+          if (a.dataset.sym === b.dataset.sym) {
+            a.classList.add('matched');
+            b.classList.add('matched');
+
+            matches++;
+
+            status.textContent =
+              'จับคู่ได้ ' + matches + ' / 3';
+
+            flipped = [];
+            busy = false;
+
+            if (matches >= 3) {
+              var go = el(
+                'a',
+                'btn btn-main',
+                'ไปต่อ'
+              );
+
+              go.href = '#quiz';
+
+              actions.appendChild(go);
+
+              status.textContent =
+                'ครบทุกคู่แล้วครับ เก่งมาก!';
+            }
+          } else {
+            setTimeout(function () {
+              a.classList.remove('flip');
+              b.classList.remove('flip');
+
+              flipped = [];
+              busy = false;
+            }, 650);
+          }
+        }
+      });
+
+      grid.appendChild(card);
+    });
+  }
+
+  /* ================= ด่าน 2: แบบทดสอบความเข้ากัน ================= */
+
+  var QUIZ = [
+    {
+      q: 'เวลาว่างชอบทำอะไรมากกว่ากัน',
+      a: 'อยู่บ้านชิลๆ',
+      b: 'ออกไปเที่ยว',
+      reactA: 'ดีครับ ไว้มานอนด้วยกันนะครับ😳',
+      reactB: 'พาผมไปด้วยนะครับอ้วง😳'
+    },
+    {
+      q: 'ชอบหนังแนวไหนมากกว่ากัน',
+      a: 'โรแมนติก',
+      b: 'ตลก',
+      reactA: 'เดี๋ยวทำการบ้านหาหนังรักมาดูด้วยครับ😳',
+      reactB: 'ชอบหนังตลก น่าจะชอบคนตลกแบบผมนะครับ😳'
+    },
+    {
+      q: 'ถ้าผมชวนไปกินข้าวจะว่าไงครับ',
+      a: 'ไปสิ',
+      b: 'ขอคิดดูก่อน',
+      reactA: 'คิดเมนูไว้แล้ว ไปทานด้วยกันนะครับ 😳',
+      reactB: 'ไม่เป็นไรครับ ผมรอได้เสมอ'
+    }
+  ];
+
+  function renderQuiz() {
+    updateStep(3);
+    view.textContent = '';
+
+    view.appendChild(
+      el(
+        'h1',
+        '',
+        'ด่าน 2: ทดสอบความเข้ากัน'
+      )
+    );
+
+    view.appendChild(
+      el(
+        'p',
+        'sub',
+        'ตอบ 3 ข้อสั้นๆ แล้วมาดูกันว่าเราเข้ากันแค่ไหนครับ'
+      )
+    );
+
+    var ring = el('div', 'meter-ring');
+
+    var R = 65;
+    var C = 2 * Math.PI * R;
+
+    ring.innerHTML =
+      '<svg viewBox="0 0 150 150">' +
+        '<circle class="track" cx="75" cy="75" r="' + R + '"/>' +
+        '<circle class="fill" cx="75" cy="75" r="' + R +
+          '" stroke-dasharray="' + C +
+          '" stroke-dashoffset="' + C + '"/>' +
+      '</svg>' +
+      '<div class="meter-label">0%</div>';
+
+    view.appendChild(ring);
+
+    var fillCircle = ring.querySelector('.fill');
+    var label = ring.querySelector('.meter-label');
+
+    var qBox = el('p', 'quiz-q');
+
+    view.appendChild(qBox);
+
+    var reaction = el(
+      'p',
+      'quiz-reaction'
+    );
+
+    view.appendChild(reaction);
+
+    var actions = el('div', 'actions');
+
+    view.appendChild(actions);
+
+    var idx = 0;
+    var percent = 0;
+
+    function setPercent(p) {
+      percent = Math.min(100, p);
+
+      var offset =
+        C - (percent / 100) * C;
+
+      fillCircle.style.strokeDashoffset =
+        String(offset);
+
+      label.textContent =
+        percent + '%';
+    }
+
+    function showQuestion() {
+      actions.textContent = '';
+      reaction.textContent = '';
+
+      var item = QUIZ[idx];
+
+      qBox.textContent = item.q;
+
+      var btnA = el(
+        'button',
+        'btn btn-main',
+        item.a
+      );
+
+      btnA.type = 'button';
+
+      var btnB = el(
+        'button',
+        'btn btn-alt',
+        item.b
+      );
+
+      btnB.type = 'button';
+
+      actions.appendChild(btnA);
+      actions.appendChild(btnB);
+
+      function answer(reactText) {
+        btnA.disabled = true;
+        btnB.disabled = true;
+
+        setPercent(
+          percent + Math.round(100 / QUIZ.length)
+        );
+
+        reaction.textContent = reactText;
+
+        idx++;
+
+        setTimeout(function () {
+          if (idx < QUIZ.length) {
+            showQuestion();
+          } else {
+            actions.textContent = '';
+
+            qBox.textContent =
+              percent >= 100
+                ? 'เข้ากันขนาดนี้ ต้องอยู่ด้วยกันนานๆละนะครับ 😳'
+                : 'เข้ากันเหมือนชื่อนามสกุลเรา 2 คน 🤣';
+
+            var go = el(
+              'a',
+              'btn btn-main',
+              'ไปต่อ'
+            );
+
+            go.href = '#lock';
+
+            actions.appendChild(go);
+          }
+        }, 900);
+      }
+
+      btnA.addEventListener(
+        'click',
+        function () {
+          answer(item.reactA);
+        }
+      );
+
+      btnB.addEventListener(
+        'click',
+        function () {
+          answer(item.reactB);
+        }
+      );
+    }
+
+    showQuestion();
+  }
+
+  /* ================= ด่าน 3: ไขรหัสล็อก ================= */
+
+  var LOCK_CODE = [
+    0,
+    8,
+    2,
+    7
+  ];
+
+  function renderLock() {
+    updateStep(4);
+    view.textContent = '';
+
+    view.appendChild(
+      el(
+        'h1',
+        '',
+        'ด่าน 3: ไขรหัสหัวใจ'
+      )
+    );
+
+    view.appendChild(
+      el(
+        'p',
+        'sub',
+        'หมุนตัวเลขให้ถูกทั้ง 4 หลัก แล้วลองไขดูสิครับ'
+      )
+    );
+
+    var wrap = el('div', 'lock-wrap');
+
+    var icon = el(
+      'div',
+      'lock-icon',
+      '🔒'
+    );
+
+    wrap.appendChild(icon);
+
+    var dials = el('div', 'dials');
+
+    var values = [
+      0,
+      0,
+      0,
+      0
+    ];
+
+    var valueEls = [];
+
+    for (
+      var i = 0;
+      i < LOCK_CODE.length;
+      i++
+    ) {
+      (function (i) {
+        var d = el('div', 'dial');
+
+        var up = el(
+          'button',
+          '',
+          '▲'
+        );
+
+        up.type = 'button';
+
+        var val = el(
+          'div',
+          'dial-value',
+          '0'
+        );
+
+        valueEls.push(val);
+
+        var down = el(
+          'button',
+          '',
+          '▼'
+        );
+
+        down.type = 'button';
+
+        up.addEventListener(
+          'click',
+          function () {
+            values[i] =
+              (values[i] + 1) % 10;
+
+            val.textContent =
+              String(values[i]);
+          }
+        );
+
+        down.addEventListener(
+          'click',
+          function () {
+            values[i] =
+              (values[i] + 9) % 10;
+
+            val.textContent =
+              String(values[i]);
+          }
+        );
+
+        d.appendChild(up);
+        d.appendChild(val);
+        d.appendChild(down);
+
+        dials.appendChild(d);
+      })(i);
+    }
+
+    wrap.appendChild(dials);
+    view.appendChild(wrap);
+
+    var hint = el(
+      'p',
+      'hint',
+      ''
+    );
+
+    view.appendChild(hint);
+
+    var actions = el(
+      'div',
+      'actions'
+    );
+
+    view.appendChild(actions);
+
+    var tryBtn = el(
+      'button',
+      'btn btn-main',
+      'ไขรหัส'
+    );
+
+    tryBtn.type = 'button';
+
+    actions.appendChild(tryBtn);
+
+    tryBtn.addEventListener(
+      'click',
+      function () {
+        var correct = values.every(
+          function (v, i) {
+            return v === LOCK_CODE[i];
+          }
+        );
+
+        if (!correct) {
+          hint.textContent =
+            'ยังไม่ใช่นะ ลองนึกดูอีกทีสิครับเบบี๋ 🤔';
+
+          wrap.classList.remove('shake');
+
+          void wrap.offsetWidth;
+
+          wrap.classList.add('shake');
+
+          return;
+        }
+
+        tryBtn.remove();
+
+        icon.textContent = '🔓';
+        icon.classList.add('open');
+
+        hint.textContent =
+          'ปลดล็อคสำเร็จ! ✨';
+
+        var go = el(
+          'a',
+          'btn btn-main',
+          'ไปต่อ'
+        );
+
+        go.href = '#balloons';
+
+        actions.appendChild(go);
+      }
+    );
+  }
+
+  /* ================= ด่าน 4: ป๊อปลูกโป่งเปิดประโยค ================= */
+
+  var WORDS = [
+    'ผม',
+    'ชอบ',
+    'คุณ',
+    'มาก',
+    'เลยครับ 🧡'
+  ];
+
+  var BALLOON_COLORS = [
+    '#FFD36E',
+    '#FF9ED8',
+    '#9ED8FF',
+    '#B6FF9E',
+    '#D6B6FF'
+  ];
+
+  function renderBalloons() {
+    updateStep(5);
+    view.textContent = '';
+
+    view.appendChild(
+      el(
+        'h1',
+        '',
+        'ด่าน 4: ป๊อปลูกโป่ง'
+      )
+    );
+
+    view.appendChild(
+      el(
+        'p',
+        'sub',
+        'กดลูกโป่งให้แตกทีละลูก แล้วมาดูกันว่าประโยคจะเป็นอะไรครับ'
+      )
+    );
+
+    var sentence = el(
+      'div',
+      'sentence'
+    );
+
+    view.appendChild(sentence);
+
+    var blanks = WORDS.map(
+      function () {
+        var b = el(
+          'span',
+          'blank',
+          'ـــ '
+        );
+
+        sentence.appendChild(b);
+
+        return b;
+      }
+    );
+
+    var field = el(
+      'div',
+      'balloons'
+    );
+
+    view.appendChild(field);
+
+    var order = WORDS.map(
+      function (_, i) {
+        return i;
+      }
+    );
+
+    for (
+      var i = order.length - 1;
+      i > 0;
+      i--
+    ) {
+      var j =
+        Math.floor(
+          Math.random() * (i + 1)
+        );
+
+      var t = order[i];
+
+      order[i] = order[j];
+      order[j] = t;
+    }
+
+    var slot =
+      100 / (order.length + 1);
+
+    var popped = 0;
+
+    order.forEach(
+      function (wordIdx, pos) {
+        var b = el(
+          'button',
+          'balloon',
+          String(pos + 1)
+        );
+
+        b.type = 'button';
+
+        b.style.left =
+          (slot * (pos + 1) - 4) + '%';
+
+        b.style.background =
+          BALLOON_COLORS[
+            pos % BALLOON_COLORS.length
+          ];
+
+        b.setAttribute(
+          'aria-label',
+          'ลูกโป่ง'
+        );
+
+        b.addEventListener(
+          'click',
+          function pop() {
+            b.removeEventListener(
+              'click',
+              pop
+            );
+
+            b.classList.add('pop');
+
+            var word = el(
+              'span',
+              'word',
+              WORDS[wordIdx] + ' '
+            );
+
+            blanks[wordIdx]
+              .replaceWith(word);
+
+            blanks[wordIdx] = word;
+
+            popped++;
+
+            setTimeout(
+              function () {
+                b.remove();
+              },
+              320
+            );
+
+            if (
+              popped >= WORDS.length
+            ) {
+              setTimeout(
+                function () {
+                  location.hash = '#end';
+                },
+                900
+              );
+            }
+          }
+        );
+
+        field.appendChild(b);
+      }
+    );
+  }
+
+  /* ================= จบเกม ================= */
+
+  function renderEnd() {
+    view.textContent = '';
+
+    stepBox.className = 'step';
+
+    updateStep(TOTAL + 1);
+
+    view.appendChild(
+      el(
+        'h1',
+        '',
+        'ภารกิจสำเร็จแล้วครับ'
+      )
+    );
+
+    view.appendChild(
+      el(
+        'p',
+        'final-sentence',
+        WORDS.join(' ')
+      )
+    );
+
+    view.appendChild(
+      el(
+        'p',
+        'sub',
+        'แล้วคุณล่ะครับ คิดว่าไง'
+      )
+    );
+
+    var actions = el(
+      'div',
+      'actions'
+    );
+
+    view.appendChild(actions);
+
+    var yes = el(
+      'a',
+      'btn btn-main',
+      'ชอบ'
+    );
+
+    yes.href = '#done';
+
+    actions.appendChild(yes);
+
+    var no = el(
+      'button',
+      'btn btn-alt',
+      'ไม่'
+    );
+
+    no.type = 'button';
+
+    actions.appendChild(no);
+
+    makeDodger(no, yes);
+
+    confettiBurst();
+  }
+
+  function renderDone() {
+    view.textContent = '';
+
+    stepBox.className = 'step off';
+    stepBox.style.visibility = 'hidden';
+
+    view.appendChild(
+      el(
+        'h1',
+        '',
+        'สายสืบฮายครับ อยู่กับผมนานๆนะครับอ้วง 🧡'
+      )
+    );
+
+    view.appendChild(
+      el(
+        'p',
+        'sub',
+        'ขอบคุณที่เล่นภารกิจนี้กับผมจนจบนะครับ'
+      )
+    );
+
+    confettiBurst();
+  }
+
+  function makeDodger(btn, avoid) {
+    var texts = [
+      'ไม่',
+      'ไม่จริงอ่ะ',
+      'จับไม่ได้หรอก',
+      'เกมนี้ก็มีกลเหมือนกันนะ',
+      'ลองอีกทีสิ',
+      'ยอมเถอะครับ'
+    ];
+
+    var n = 0;
+    var scale = 1;
+    var fled = false;
+    var last = 0;
+
+    function flee(e) {
+      var now = Date.now();
+
+      if (now - last < 150) {
+        return;
+      }
+
+      last = now;
+
+      if (e && e.preventDefault) {
+        e.preventDefault();
+      }
+
+      var r =
+        btn.getBoundingClientRect();
+
+      if (!fled) {
+        fled = true;
+
+        var sp =
+          document.createElement('span');
+
+        sp.style.display =
+          'inline-block';
+
+        sp.style.width =
+          r.width + 'px';
+
+        sp.style.height =
+          r.height + 'px';
+
+        btn.parentNode.insertBefore(
+          sp,
+          btn
+        );
+
+        btn.style.left =
+          r.left + 'px';
+
+        btn.style.top =
+          r.top + 'px';
+
+        btn.classList.add('flee');
+
+        void btn.offsetWidth;
+      }
+
+      n++;
+
+      scale =
+        Math.max(
+          0.55,
+          scale * 0.92
+        );
+
+      btn.textContent =
+        texts[
+          Math.min(
+            n - 1,
+            texts.length - 1
+          )
+        ];
+
+      var w =
+        btn.offsetWidth * scale;
+
+      var h =
+        btn.offsetHeight * scale;
+
+      var vw =
+        window.innerWidth;
+
+      var vh =
+        window.innerHeight;
+
+      var padX = 16;
+      var padTop = 16;
+      var padBottom = 16;
+
+      var px =
+        (e &&
+          typeof e.clientX === 'number')
+          ? e.clientX
+          : r.left + r.width / 2;
+
+      var py =
+        (e &&
+          typeof e.clientY === 'number')
+          ? e.clientY
+          : r.top + r.height / 2;
+
+      var yr =
+        avoid.getBoundingClientRect();
+
+      var best = null;
+
+      for (var i = 0; i < 40; i++) {
+        var x =
+          padX +
+          Math.random() *
+            Math.max(
+              1,
+              vw - w - 2 * padX
+            );
+
+        var y =
+          padTop +
+          Math.random() *
+            Math.max(
+              1,
+              vh - h - padTop - padBottom
+            );
+
+        if (!best) {
+          best = {
+            x: x,
+            y: y
+          };
+        }
+
+        var far =
+          Math.hypot(
+            x + w / 2 - px,
+            y + h / 2 - py
+          ) >
+          (vw < 860 ? 150 : 220);
+
+        var clear =
+          x > yr.right + 16 ||
+          x + w < yr.left - 16 ||
+          y > yr.bottom + 16 ||
+          y + h < yr.top - 16;
+
+        if (far && clear) {
+          best = {
+            x: x,
+            y: y
+          };
+
+          break;
+        }
+      }
+
+      btn.style.left =
+        best.x + 'px';
+
+      btn.style.top =
+        best.y + 'px';
+
+      btn.style.transform =
+        'scale(' + scale + ')';
+    }
+
+    btn.addEventListener(
+      'pointerenter',
+      flee
+    );
+
+    btn.addEventListener(
+      'pointerdown',
+      flee
+    );
+
+    btn.addEventListener(
+      'touchstart',
+      flee,
+      { passive: false }
+    );
+
+    btn.addEventListener(
+      'click',
+      flee
+    );
+  }
+
+  var PAGES = {
+    match: renderMatch,
+    quiz: renderQuiz,
+    lock: renderLock,
+    balloons: renderBalloons,
+    end: renderEnd,
+    done: renderDone
+  };
+
+  function route() {
+    var h =
+      (location.hash || '')
+        .replace('#', '');
+
+    (PAGES[h] || renderIntro)();
+  }
+
+  buildStep();
+
+  window.addEventListener(
+    'hashchange',
+    route
+  );
+
+  route();
+</script>
+
+</body>
+</html>
